@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 命名空间 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+		
+			
+	<context:component-scan base-package="com.aaa"></context:component-scan>
+	<!-- 读取properties文件所在的路径 --> 
+	<context:property-placeholder location="classpath:jdbc_oracle.properties"/>
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${driver}"></property>
+		<property name="url" value="${dburl}"></property>
+		<property name="username" value="${dbusername}"></property>
+		<property name="password" value="${dbpassword}"></property>
+		<!-- 数据库连接池在初始的时候的连接数 -->
+		<property name="initialSize" value="${init}"></property>
+		<!-- 数据库空闲的时候的最小的连接数 -->
+		<property name="minIdle" value="${min}"></property>
+		<!-- 数据库空闲的最大的连接数 -->
+		<property name="maxIdle" value="${max}"></property>
+		<!-- 数据库最大连接数 -->
+		<property name="maxTotal" value="${maxT}"></property>		
+	</bean>
+	<!-- SqlSessionFactory -->
+	<bean id="SqlSession" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!--配置别名   默认的别名是类名的首字母小写-->
+		<property name="typeAliasesPackage" value="com.aaa.entity"></property>
+		<!-- 把数据源加入到sqlSessionFactory里面 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 扫描sql文件 -->
+		<property name="mapperLocations" value="classpath:com/aaa/mapper/*.xml"></property>
+	</bean>
+	
+	<!-- 扫描一下mybatis里面接口-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.aaa.dao"></property>
+	</bean>
+	
+	<task:annotation-driven/>
+	
+</beans>
+
+
+
